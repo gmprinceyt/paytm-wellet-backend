@@ -1,6 +1,11 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/config");
 
+/**
+ * inSide Request Header
+ * Authorization - Bearer ...tokenstring
+ */
+
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
 
@@ -9,7 +14,6 @@ function authMiddleware(req, res, next) {
       message: "Unauthorized",
     });
   const token = authHeader.split(" ")[1];
-
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
 

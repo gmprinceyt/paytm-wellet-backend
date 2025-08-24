@@ -11,7 +11,15 @@ const SigninRequestBodyValidation = z.object({
     password: z.string().min(6),
 });
 
+const UpdateRequestBodyValidation = z.object({
+    firstName: z.string().min(3).max(50).trim().optional(),
+    lastName: z.string().min(3).max(50).trim().optional().optional(),
+    newPassword: z.string().min(6).optional(),
+    oldPassword: z.string().min(6).optional(),
+});
+
 module.exports = {
     SignupRequestBodyValidation,
-    SigninRequestBodyValidation
+    SigninRequestBodyValidation,
+    UpdateRequestBodyValidation
 }
