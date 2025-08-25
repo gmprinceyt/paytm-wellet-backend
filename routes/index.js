@@ -1,11 +1,10 @@
-const express  = require("express");
+const express = require("express");
 const Router = express.Router();
+const userRoutes = require("./user");
+const accountRouter = require("./account");
+
+Router.use("/user", userRoutes);
+Router.use("/account", accountRouter);
 
 
-Router.get("/", (req,res)=> {
-    res.status(200).json({
-        message: "Working Fine All Routes"
-    })
-} )
-
-module.exports = Router
+module.exports = Router;

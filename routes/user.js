@@ -7,9 +7,11 @@ const {
 const { User } = require("../model/user");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/config");
-const userRoutes = Router();
 const bcrypt = require("bcrypt");
 const authMiddleware = require("../middleware/auth");
+const { Account } = require("../model/Account");
+const { CustomError } = require("../config/ErrorHander");
+const userRoutes = Router();
 
 userRoutes.post("/signup", async (req, res, next) => {
   try {
@@ -25,12 +27,18 @@ userRoutes.post("/signup", async (req, res, next) => {
 
     const existingUser = await User.findOne({ username: data.username });
     if (existingUser) {
-      return res.status(411).json({
-        message: "Email already taken / Incorrect inputs",
-      });
+      return next(new CustomError("Email already taken / Incorrect inputs", 411));
     }
     const user = await User.create(data);
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+    const userId = user._id;
+    const token = jwt.sign({ userId }, JWT_SECRET);
+
+    //Create Account 
+    await Account.create({
+      userId,
+      balance:(1+ Math.random( )* 10000).toFixed(2)
+    })
+
     res.status(201).json({
       message: "User Create Successfully ✅",
       token,
@@ -145,15 +153,12 @@ userRoutes.get("/bulk", authMiddleware, async (req, res) => {
           },
         },
       ],
-    });
+    })
+      .select(["_id", "firstName", "lastName", "username"])
+      .lean();
 
     res.status(200).json({
-      users: users.map((user) => ({
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        _id: user._id,
-      })),
+      users: users,
     });
   } catch (error) {
     next(error);

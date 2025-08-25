@@ -1,27 +1,21 @@
 const express = require("express");
-const cors = require("cors")
+const cors = require("cors");
+const { ErrorHandler } = require("./config/ErrorHander");
 const connect = require("./config/db");
 const app = express();
 
-app.use(express.json())
-app.use(cors())
+// global Middleware 
+app.use(express.json());
+app.use(cors());
 
-
-// Import Routes 
+//Routes
 const Router = require("./routes/index");
-const userRoutes = require("./routes/user");
-
-app.use("/api/v1", Router)
-app.use("/api/v1/user", userRoutes);
-
-app.use((err,req,res,next)=> {
-    console.log(err)
-    res.status(500).json({
-        message: err.message,
-        err,
-        success: false
-    })
-})
+app.use("/api/v1", Router);
 
 
-connect().then(() => app.listen(3000, () => console.log("Server Started At http://localhost:3000")));
+// global Error Handler 
+app.use(ErrorHandler);
+
+connect().then(() =>
+  app.listen(3000, () => console.log("Server Started At http://localhost:3000"))
+);
