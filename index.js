@@ -18,4 +18,4 @@ app.use(ErrorHandler);
 
 connect().then(() =>
   app.listen(3000, () => console.log("Server Started At http://localhost:3000"))
-);
+).catch((err)=> console.log(err));
